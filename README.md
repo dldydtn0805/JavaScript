@@ -1,1 +1,3 @@
-# legendary-lamp
+## Introduction
+
+For Javascript Algorithm Study
