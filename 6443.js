@@ -5,11 +5,11 @@ const rl = readline.createInterface({
 });
 
 const inputLines = []
-let N, arr, alphabets, check, visited
-
+let N, alphabets, check, visited
+let ans = ''
 function getAnagram(res){
     if (res.length === alphabets.length) {
-        console.log(res)
+        ans += `${res}\n`
         return true
     } else {
         for (let i = 0 ; i < alphabets.length; i++) {
@@ -25,9 +25,6 @@ function getAnagram(res){
 }
 rl.on('line', (line) => {
     inputLines.push(line)
-    if (inputLines.length === Number(inputLines[0]) + 1) {
-        rl.close()
-    }
 }).on('close', ()=> {
     [N] = inputLines[0].split(' ').map(Number)
     for (let tc = 1;  tc < inputLines.length; tc ++) {
@@ -44,4 +41,6 @@ rl.on('line', (line) => {
             }
         }
     }
+    console.log(ans)
+    rl.close()
 })
