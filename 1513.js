@@ -1,0 +1,83 @@
+// https://www.acmicpc.net/problem/1495
+/* 해설
+* */
+
+/*입력
+3 3 2
+2 2
+3 2
+* */
+
+/*출력
+1 3 2
+* */
+
+let fs = require('fs');
+let input = fs.readFileSync(process.platform === "linux" ? "/dev/stdin" : "input.txt"
+).toString().trim().split('\n');
+
+const INF = Number.MAX_SAFE_INTEGER
+const directions = [
+    [-1,0],[0,1],[1,0],[0,-1]
+]
+const MOD = 1000007
+const solve = (inputLines) => {
+    let idx = 0
+    const [N, M, C] = inputLines[idx++].split(' ').map(Number)
+    const arcade = new Array(N+1).fill(null).map(()=>
+        new Array(M+1).fill(null).map(()=>0)
+    )
+    for (let i = 1; i < C+1; i ++) {
+        const [x, y] = inputLines[idx++].split(' ').map(Number)
+        arcade[x][y] = i
+    }
+    // dp[i][j][k][l] = i행 j열 위치에서 k번 오락실까지 l개의 오락실을 방문했을때의 경로의 수
+    const dp = new Array(N+1).fill(null).map(()=>
+        new Array(M+1).fill(null).map(()=>
+            new Array(C+1).fill(null).map(()=>
+                new Array(C+1).fill(null).map(()=>0)
+            )
+        )
+    )
+
+    if (arcade[1][1] !== 0) {
+        dp[1][1][arcade[1][1]][1] = 1
+    } else {
+        dp[1][1][0][0] = 1
+    }
+    for (let i = 1; i < N+1; i ++) {
+        for (let j = 1; j < M+1; j ++) {
+            if (arcade[i][j] !== 0) {
+                const K = arcade[i][j]
+                for (let k = 0; k < K; k++) {
+                    for (let l = 1; l < C+1; l++) {
+                        dp[i][j][K][l] += (dp[i-1][j][k][l-1] + dp[i][j-1][k][l-1])
+                    }
+                }
+                for (let l = 1; l < C+1; l ++) {
+                    dp[i][j][K][l] %= MOD
+                }
+            } else {
+                for (let k = 0; k < C+1; k++) {
+                    for (let l = 0; l < C+1; l++) {
+                        dp[i][j][k][l] += (dp[i-1][j][k][l] + dp[i][j-1][k][l])%MOD
+                    }
+                }
+            }
+        }
+    }
+    let ans = new Array(C+1).fill(null).map(()=>0)
+    for (let i = 0; i < C+1; i++) {
+        for (let j = 0; j < C+1; j++) {
+            ans[j] += dp[N][M][i][j]
+        }
+    }
+    for (let i = 0; i < C+1; i++) {
+        ans[i] %= MOD
+    }
+    return ans.join(' ')
+
+}
+
+
+console.log(solve(input))
